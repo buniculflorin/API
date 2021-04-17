@@ -33,7 +33,7 @@ class User
     private $username;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="string", length=10)
      */
     private $dateCreated;
 
@@ -83,12 +83,12 @@ class User
         return $this;
     }
 
-    public function getDateCreated(): ?\DateTimeInterface
+    public function getdateCreated(): ?string
     {
         return $this->dateCreated;
     }
 
-    public function setDateCreated(\DateTimeInterface $dateCreated): self
+    public function setDateCreated(string $dateCreated): self
     {
         $this->dateCreated = $dateCreated;
 

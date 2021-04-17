@@ -33,7 +33,7 @@ class User
     private $username;
 
     /**
-     * @ORM\Column(type="string", length=10)
+     * @ORM\Column(type="string", length=20)
      */
     private $dateCreated;
 
@@ -83,7 +83,7 @@ class User
         return $this;
     }
 
-    public function getdateCreated(): ?string
+    public function getDateCreated(): ?string
     {
         return $this->dateCreated;
     }

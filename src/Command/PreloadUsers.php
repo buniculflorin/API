@@ -33,9 +33,6 @@ class PreloadUsers extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-
-
-
         foreach(self::USER_DATA as $userInformation)
         {
             $user = new User();
@@ -48,7 +45,6 @@ class PreloadUsers extends Command
             $this->entityManager->persist($user);
         }
         $this->entityManager->flush();
-
 
         return Command::SUCCESS;
 

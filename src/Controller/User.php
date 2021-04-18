@@ -86,6 +86,9 @@ class User
      $userRepository = $this->entityManager->getRepository(UserEntity::class);
      $user = $userRepository->find($_GET['id']);
 
+     if (null === $user) {
+       return new JsonResponse(['result'=>"The record does not exist"], 404);
+     }
      /*
       * Remove the user with the id given in the request
       */

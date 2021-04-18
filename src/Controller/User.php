@@ -44,6 +44,7 @@ class User
     }
 
     /**
+     *
      * @Route ("/users", methods = {"GET"})
      */
     public function get()
@@ -51,18 +52,47 @@ class User
         if (!$this->validateRequest()){
             return new JsonResponse(['result' => "UnAuthorised"], 403);
         }
-        return new JsonResponse(['result' => "GET"]);
+
+        $result = [];
+
+        $userRepository = $this->entityManager->getRepository(UserEntity::class);
+        foreach ($userRepository->findAll() as $user){
+            $result[] = [
+                'id' => $user->getId(),
+                'firstName' => $user->getFirstName(),
+                'lastName' => $user->getlastName(),
+                'username' => $user->getUserName(),
+                'darkMode' => $user->getDarkMode(),
+                'dateCreated' => $user->getDateCreated()
+
+            ];
+        }
+
+        return new JsonResponse(['result' => $result]);
     }
 
     /**
-     * @Route ("/users", methods = {"DELETE"}))
+     * Delete user
+     * @Route ("/users", methods={"DELETE"})
      */
     public function delete()
     {
-        if (!$this->validateRequest()){
+     if (!$this->validateRequest()){
             return new JsonResponse(['result' => "UnAuthorised"], 403);
         }
-        return new JsonResponse(['result' => "DELETE"]);
+     /*
+      * First retrieve the user from the database using the id from the Request
+      */
+     $userRepository = $this->entityManager->getRepository(UserEntity::class);
+     $user = $userRepository->find($_GET['id']);
+
+     /*
+      * Remove the user with the id given in the request
+      */
+     $this->entityManager->remove($user);
+     $this->entityManager->flush();
+
+     return new JsonResponse(['result'=>"Successful delete of the user with {$_GET['id']}"]);
     }
 
     /**
@@ -91,16 +121,44 @@ class User
     }
 
     /**
-     * @Route ("/users", methods = {"PUT"}))
+     * @Route ("/users", methods = {"PATCH"}))
      */
     public function update()
     {
         if (!$this->validateRequest()){
             return new JsonResponse(['result' => "UnAuthorised"], 403);
         }
-        return new JsonResponse(['result' => "PATCH"]);
-    }
+        $requestedBody = json_decode(
+            file_get_contents('php://input'),
+            true
+        );
+
+        $userRepository = $this->entityManager->getRepository(UserEntity::class);
+        /** @var UserEntity $user  */
+        $user = $userRepository->find($requestedBody['id']);
+
+        if(isset($requestedBody['firstName'])) {
+            $user->setFirstName($requestedBody['firstName']);
+        }
+
+        if(isset($requestedBody['lastName'])) {
+            $user->setLastName($requestedBody['lastName']);
+        }
+
+        if(isset($requestedBody['username'])) {
+            $user->setUsername($requestedBody['username']);
+        }
+
+        if(isset($requestedBody['darkMode'])) {
+            $user->setDarkMode($requestedBody['darkMode']);
+        }
+
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
 
 
+
+        return new JsonResponse(['result' => "Successfully updated user with {$user->getId()}"]);
+        }
 
 }
